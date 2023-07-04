@@ -43,9 +43,9 @@ app.post("/login/", async (request, response) => {
       const payload = {
         username: username,
       };
-      const jwsToken = jwt.sign(payload, "my_secret_code");
-      console.log(jwsToken);
-      response.send({ jwsToken });
+      const jwtToken = jwt.sign(payload, "my_secret_code");
+      console.log(jwtToken);
+      response.send({ jwtToken });
     } else {
       response.status(400);
       response.send("Invalid password");
@@ -87,10 +87,9 @@ const changeObjectFormat = (eachObject) => {
 
 // api 2
 app.get("/states/", authorization, async (request, response) => {
-  const username = request.username;
   const query = `SELECT * FROM state;`;
   const array = await db.all(query);
-  response.send(array);
+
   const resultArray = array.map((eachObject) => changeObjectFormat(eachObject));
   response.send(resultArray);
 });
@@ -104,5 +103,4 @@ app.get("/states/:stateId/", authorization, async (request, response) => {
   response.send(resultObject);
 });
 
-//api 4
-app.module.exports = app;
+module.exports = app;
