@@ -159,8 +159,8 @@ app.delete(
   async (request, response) => {
     const { districtId } = request.params;
     const query = `DELETE FROM district WHERE district_id=${districtId};`;
-    // const array = await db.get(query);
-    // const resultObject = districtObject(array);
+    const array = await db.get(query);
+    const resultObject = districtObject(array);
     response.send("District Removed");
   }
 );
@@ -198,10 +198,16 @@ app.put("/districts/:districtId/", authorization, async (request, response) => {
 app.get("/states/:stateId/stats/", authorization, async (request, response) => {
   const { stateId } = request.params;
 
-  const query = `SELECT SUM(district.cases) AS totalCases,SUM(district.cured) AS totalCured,SUM(district.active) AS totalActive,SUM(district.deaths) AS totalDeaths 
-  FROM state INNER JOIN district ON state.state_id=district.district_id
+  const query = `SELECT 
+  SUM(cases),SUM(cured),SUM(active),SUM(deaths) 
+  FROM district
   WHERE state_id=${stateId};`;
   const dbResult = await db.get(query);
-  response.send(dbResult);
+  response.send({
+    totalCases: dbResult["SUM(cases)"],
+    totalCured: dbResult["SUM(cured)"],
+    totalActive: dbResult["SUM(active)"],
+    totalDeaths: dbResult["SUM(deaths)"],
+  });
 });
 module.exports = app;
